@@ -1,0 +1,6 @@
+MACHINE Ticket
+SEES input_
+/* a /* */
+CONSTRAINTS c = d
+/* b */
+END

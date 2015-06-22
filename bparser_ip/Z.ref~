@@ -1,0 +1,5 @@
+MACHINE input
+/* a /* */
+SEES A,Z
+/* b */
+END

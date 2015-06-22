@@ -1,0 +1,4 @@
+MACHINE A
+/* INCLUDES input (a,b,c) , Z /* (<"("> Expression_in_par (<","> Expression_in_par)* <")">)?  /* (<","> Composed_identifier (<"("> Expression_in_par (<","> Expression_in_par)* <")">)?)* */
+
+END

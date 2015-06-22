@@ -1,0 +1,5 @@
+MACHINE X
+/* a /* */
+SEES A,Z
+/* b */
+END

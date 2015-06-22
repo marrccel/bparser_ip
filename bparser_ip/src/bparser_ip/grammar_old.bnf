@@ -1,0 +1,12 @@
+S			= machine
+machine			= machine_varian machine_header machine_clause_l? "end"
+machine_varian		= "MACHINE" | "MODEL" | "SYSTEM"
+machine_header		= composed_ident machine_params?
+machine_params		= '(' machine_param_l ')'
+machine_param_l		= machine_param | machine_param_l ',' machine_param
+machine_param		= exp_in_par
+exp_in_par		= exp_in_par ';' exp_top | exp_in_par '||' exp_top | exp_top
+exp_top			= exp_p125
+machine_clause_l	= "a"
+<ws>			= "\n"* " "+ "\n"*
+<wss>			= (#"\\s" | #"\\n")*

@@ -1,0 +1,5 @@
+MACHINE input
+/* a /* */
+CONSTRAINTS e = f & g = h
+/* b */
+END

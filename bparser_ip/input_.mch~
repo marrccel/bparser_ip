@@ -1,0 +1,6 @@
+MACHINE m
+
+VARIABLES
+  xx,
+	yy
+END

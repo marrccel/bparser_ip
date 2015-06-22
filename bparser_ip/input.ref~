@@ -1,0 +1,3 @@
+MACHINE m
+INCLUDE input_
+END

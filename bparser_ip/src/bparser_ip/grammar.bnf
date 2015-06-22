@@ -1,0 +1,561 @@
+S					= S_machine | S_definition_file-machine | S_predicate-machine | S_expression-machine | S_predformula-machine | S_exprformula-machine | S_substitution-machine | S_abstract_constants-machine | S_abstract_variables-machine | S_assertions-machine | S_concrete_constants-machine | S_concrete_variables-machine | S_constants-machine | S_constraints-machine | S_definitions-machine | S_extends-machine | S_imports-machine | S_includes-machine | S_initialisation-machine | S_invariant-machine | S_local_operations-machine | S_operations-machine | S_promotes-machine | S_properties-machine | S_sees-machine | S_sets-machine | S_uses-machine | S_values-machine | S_variables-machine | S_oppattern-machine | S_definition-machine
+
+
+<S_machine>				= Machine
+S_definition_file-machine		= Machine_clause-definitions
+S_predicate-machine			= <"#PREDICATE"> Predicate_top
+S_expression-machine			= <"#EXPRESSION"> Expression_top
+S_predformula-machine			= <"#FORMULA"> Predicate_top
+S_exprformula-machine			= <"#FORMULA"> Expression_top
+S_substitution-machine			= <"#SUBSTITUTION"> Substitution_l1
+S_abstract_constants-machine		= <"#ABSTRACT_CONSTANTS"> Machine_clause-abstract_constants
+S_abstract_variables-machine		= <"#ABSTRACT_VARIABLES"> Machine_clause-variables
+S_assertions-machine			= <"#ASSERTIONS"> Machine_clause-assertions
+S_concrete_constants-machine		= <"#CONCRETE_CONSTANTS"> Machine_clause-constants
+S_concrete_variables-machine		= <"#CONCRETE_VARIABLES"> Machine_clause-concrete_variables
+S_constants-machine			= <"#CONSTANTS"> Machine_clause-constants
+S_constraints-machine			= <"#CONSTRAINTS"> Machine_clause-constraints
+S_definitions-machine			= <"#DEFINITIONS"> Machine_clause-definitions
+S_extends-machine			= <"#EXTENDS"> Machine_clause-extends
+S_imports-machine			= <"#IMPORTS"> Machine_clause-imports
+S_includes-machine			= <"#INCLUDES"> Machine_clause-includes
+S_initialisation-machine		= <"#INITIALISATION"> Machine_clause-initialisation
+S_invariant-machine			= <"#INVARIANT"> Machine_clause-invariant
+S_local_operations-machine		= <"#LOCAL_OPERATIONS"> Machine_clause-operations
+S_operations-machine			= <"#OPERATIONS"> Machine_clause-operations
+S_promotes-machine			= <"#PROMOTES"> Machine_clause-promotes
+S_properties-machine			= <"#PROPERTIES"> Machine_clause-properties
+S_sees-machine				= <"#SEES"> Machine_clause-sees
+S_sets-machine				= <"#SETS"> Machine_clause-sets
+S_uses-machine				= <"#USES"> Machine_clause-uses
+S_values-machine			= <"#VALUES"> Machine_clause-values
+S_variables-machine			= <"#VARIABLES"> Machine_clause-variables
+S_oppattern-machine			= <"#OPPATTERN"> Composed_identifier (<"("> Op_pattern (<","> Op_pattern)* <")">)?
+S_definition-machine			= <"#DEFINITION"> Definition
+
+<Op_pattern>				= Op_pattern_def | Op_pattern_undef
+Op_pattern_def				= Expression_in_par
+Op_pattern_undef			= <"_">
+
+Machine					= Machine_a | Machine-refinement_machine | Machine-implementation_machine
+<Machine_a>				= Machine_a-abstract_machine-machine | Machine_a-abstract_machine-model | Machine_a-abstract_machine-system
+Machine_a-abstract_machine-machine	= T_machine Header Machine_clause_list <"END">
+Machine_a-abstract_machine-model	= T_model Header Machine_clause_list <"END">
+Machine_a-abstract_machine-system	= T_system Header Machine_clause_list <"END">
+
+Header					= id_header (<"."> id_header)* (<"("> Expression_in_par (<","> Expression_in_par)* <")">)?
+
+Machine_clause_list			= Machine_clause*
+
+Machine-refinement_machine		= <"REFINEMENT"> Header <"REFINES"> idload Machine_clause_list <"END">
+Machine-implementation_machine		= <"IMPLEMENTATION"> Header <"REFINES"> idload  Machine_clause_list <"END">
+
+<Machine_clause>			= Machine_clause-definitions | Machine_clause-constraints | Machine_clause-sees | Machine_clause-promotes | Machine_clause-uses | Machine_clause-includes | Machine_clause-extends | Machine_clause-imports | Machine_clause-sets | Machine_clause-constants | Machine_clause-abstract_constants | Machine_clause-properties | Machine_clause-concrete_variables | Machine_clause-variables | Machine_clause-assertions | Machine_clause-initialisation | Machine_clause-local_operations | Machine_clause-operations | Machine_clause-values | Machine_clause-invariant | Machine_clause-freetypes
+
+Machine_clause-definitions		= <"DEFINITIONS"> Definition (<";"> Definition)* (<";">)?
+Machine_clause-constraints		= <"CONSTRAINTS"> Predicate_top
+Machine_clause-sees			= <"SEES"> Identifierload_clause_list
+Machine_clause-promotes			= <"PROMOTES"> Identifier_list
+Machine_clause-uses			= <"USES"> Identifierload_clause_list
+Machine_clause-includes			= <"INCLUDES"> Machine_ref_list
+Machine_clause-extends			= <"EXTENDS"> Machine_ref_list
+Machine_clause-imports			= <"IMPORTS"> Machine_ref_list
+Machine_clause-sets			= <"SETS"> Set (<";"> Set)*
+Machine_clause-constants		= (<"CONSTANTS"> | <"CONCRETE_CONSTANTS">) Identifier_list
+Machine_clause-abstract_constants	= <"ABSTRACT_CONSTANTS"> Identifier_list
+Machine_clause-properties		= <"PROPERTIES"> Predicate_top
+Machine_clause-concrete_variables	= <"CONCRETE_VARIABLES"> Identifier_list
+Machine_clause-variables		= (T_abstract_variables | <"VARIABLES">) Identifier_list
+Machine_clause-assertions		= <"ASSERTIONS"> Predicate_top (<";"> Predicate_top)*
+Machine_clause-initialisation		= (<"INITIALISATION"> | <"INITIALIZATION">) Substitution_l1
+Machine_clause-local_operations		= <"LOCAL_OPERATIONS"> Operation (<";"> Operation)*
+Machine_clause-operations		= (<"OPERATIONS"> | <"EVENTS">) Operation (<";"> Operation)*
+Machine_clause-values			= <"VALUES"> Values-values_entry (<";"> Values-values_entry)*
+Machine_clause-invariant		= T_invariant Predicate_top
+Machine_clause-freetypes		= <"FREETYPES"> Freetype-freetype (<";"> Freetype-freetype)*
+
+Values-values_entry			=  Composed_identifier_ <"="> Expression_top
+
+<Definition>				= D-predicate_definition | D-substitution_definition | D-expression_definition | D-file_definition
+
+D-predicate_definition			= idletter (<"("> Identifier_list <")">)? <"=="> Predicate_top
+D-substitution_definition		= idletter (<"("> Identifier_list <")">)? <"=="> Substitution_l2
+D-expression_definition			= id (<"("> Identifier_list <")">)? <"=="> Expression_top
+D-file_definition			= String_literal
+
+Machine_ref_list			= Machine_ref-machine_reference (<","> Machine_ref-machine_reference)* 
+Machine_ref-machine_reference		= idload Machine_ref_op
+Machine_ref_op				= (<"("> Expression_in_par (<","> Expression_in_par)* <")">)?
+
+
+<Set>					= Set-deferred_set | Set-enumerated_set
+Set-deferred_set			= Composed_identifier_
+Set-enumerated_set			= Composed_identifier_ <"="> <"{"> Expsc <"}">
+
+Operation				= Operation_head Composed_identifier Operation_expsc <"="> Substitution_l2
+<Operation_head>			= Identifier_list <"<--"> | Operation_noentry
+<Operation_expsc>			= <"("> Expsc <")"> | Operation_noentry
+Operation_noentry			= <"">
+
+Freetype-freetype			= id__ <"="> Freetypecons_list
+Freetypecons_list			= Freetypecons (<","> Freetypecons)*
+<Freetypecons>				= Freetypecons-element | Freetypecons-constructor
+Freetypecons-element			= id__
+Freetypecons-constructor		= id__ <"("> Expression_in_par <")">
+
+
+
+
+<Predicate_top>				= Predicate_p30
+<Predicate_p30>				= Predicate_p30-implication | Predicate_x30
+Predicate_p30-implication		= Predicate_p30 <"=>"> Predicate_x30
+<Predicate_x30>				= Predicate_p40
+<Predicate_p40>				= Predicate_p40-disjunct | Predicate_p40-conjunct |Predicate_x40
+Predicate_p40-disjunct			= Predicate_p40 <"or"> Predicate_x40
+Predicate_p40-conjunct			= Predicate_p40 <"&"> Predicate_x40
+<Predicate_x40>				= Predicate_p60
+<Predicate_p60>				= Predicate_p60-equivalence | Predicate_atomic
+Predicate_p60-equivalence		= Predicate_p60 <"<=>"> Predicate_atomic
+
+<Predicate_atomic>			= Predicate_atomic-substitution | Predicate_atomic-equal | Predicate_atomic-member | Predicate_atomic-subset | Predicate_atomic-subset_strict | Predicate_atomic-not_subset | Predicate_atomic-not_subset_strict | Predicate_atomic-not_equal | Predicate_atomic-not_member | Predicate_atomic-less_equal | Predicate_atomic-less | Predicate_atomic-greater_equal | Predicate_atomic-greater | Predicate_atomic-bfalse | Predicate_atomic-truth | Predicate_atomic-bracketed | Predicate_atomic-negation | Predicate_atomic-forall | Predicate_atomic-exists | Predicate_atomic-definition | Predicate_atomic-identifier | Predicate_atomic-function | Composed_identifier
+
+Predicate_atomic-substitution		= Predicate_atomic-assign Predicate_atomic
+Predicate_atomic-assign			= <"["> Expsc <":="> Expsc <"]">
+
+Predicate_atomic-equal			= Expression_top <"="> Expression_top
+Predicate_atomic-member			= Expression_top <":"> Expression_top
+Predicate_atomic-subset			= Expression_top <"<:"> Expression_top
+Predicate_atomic-subset_strict		= Expression_top <"<<:"> Expression_top
+Predicate_atomic-not_subset		= Expression_top <"/<:"> Expression_top
+Predicate_atomic-not_subset_strict	= Expression_top <"/<<:"> Expression_top
+Predicate_atomic-not_equal		= Expression_top <"/="> Expression_top
+Predicate_atomic-not_member		= Expression_top <"/:"> Expression_top
+Predicate_atomic-less_equal		= Expression_top <"<="> Expression_top
+Predicate_atomic-less			= Expression_top <"<"> Expression_top
+Predicate_atomic-greater_equal		= Expression_top <">="> Expression_top
+Predicate_atomic-greater		= Expression_top <">"> Expression_top
+Predicate_atomic-bfalse			= <"bfalse">
+Predicate_atomic-truth			= <"#truth_predicate">
+<Predicate_atomic-bracketed>		= <"("> Predicate_top <")">
+Predicate_atomic-negation		= <"not"> <"("> Predicate_top <")">
+Predicate_atomic-forall			= <"!"> Expsc <"."> <"("> Predicate_top <")">
+Predicate_atomic-exists			= <"#"> Expsc <"."> <"("> Predicate_top <")">
+Predicate_atomic-definition		= <"#literal_predicate"> idletter Def_call_params?
+Predicate_atomic-identifier		= <"#predicate_identifier"> idletter
+Predicate_atomic-function		= <"#predicate_identifier"> idletter <"("> Expsc <")">
+
+<Expression_in_par>			= Expression_in_par-composition | Expression_in_par-parallel_product | Expression_top
+Expression_in_par-composition		= Expression_in_par <";"> Expression_top
+Expression_in_par-parallel_product	= Expression_in_par <"||"> Expression_top
+
+<Expression_top>			= Expression_p125
+<Expression_p125>			= Expression_p125-relations | Expression_p125-partial_function | Expression_p125-total_function | Expression_p125-partial_injection | Expression_p125-total_injection | Expression_p125-partial_surjection | Expression_p125-total_surjection | Expression_p125-partial_bijection | Expression_p125-total_bijection | Expression_p125-total_relation | Expression_p125-surjection_relation | Expression_p125-total_surjection_relation | Expression_p125-surjection_relation | Expression_x125
+
+Expression_p125-relations		= Expression_p125 <"<->"> Expression_x125
+Expression_p125-partial_function	= Expression_p125 <"+->"> Expression_x125
+Expression_p125-total_function		= Expression_p125 <"-->"> Expression_x125
+Expression_p125-partial_injection	= Expression_p125 <">+>"> Expression_x125
+Expression_p125-total_injection		= Expression_p125 <">->"> Expression_x125
+Expression_p125-partial_surjection	= Expression_p125 <"+->>"> Expression_x125
+Expression_p125-total_surjection	= Expression_p125 <"-->>"> Expression_x125
+Expression_p125-partial_bijection	= Expression_p125 <">+>>"> Expression_x125
+Expression_p125-total_bijection		= Expression_p125 <">->>"> Expression_x125
+Expression_p125-total_relation		= Expression_p125 <"<<->"> Expression_x125
+Expression_p125-surjection_relation	= Expression_p125 <"<->>"> Expression_x125
+Expression_p125-total_surjection_relation = Expression_p125 <"<<->>"> Expression_x125
+<Expression_x125>			= Expression_p160
+
+<Expression_p160>			= Expression_p160-overwrite | Expression_p160-direct_product | Expression_p160-concat | Expression_p160-domain_restriction | Expression_p160-domain_subtraction | Expression_p160-range_restriction | Expression_p160-range_subtraction | Expression_p160-insert_front | Expression_p160-insert_tail | Expression_p160-union | Expression_p160-intersection | Expression_p160-restrict_front | Expression_p160-restrict_tail | Expression_p160-couple | Expression_x160 
+
+Expression_p160-overwrite		= Expression_p160 <"<+"> Expression_x160
+Expression_p160-direct_product		= Expression_p160 <"><"> Expression_x160
+Expression_p160-concat			= Expression_p160 <"^"> Expression_x160
+Expression_p160-domain_restriction	= Expression_p160 <"<|"> Expression_x160
+Expression_p160-domain_subtraction	= Expression_p160 <"<<|"> Expression_x160
+Expression_p160-range_restriction	= Expression_p160 <"|>"> Expression_x160
+Expression_p160-range_subtraction	= Expression_p160 <"|>>"> Expression_x160
+Expression_p160-insert_front		= Expression_p160 <"->"> Expression_x160
+Expression_p160-insert_tail		= Expression_p160 <"<-"> Expression_x160
+Expression_p160-union			= Expression_p160 <"\\/"> Expression_x160
+Expression_p160-intersection		= Expression_p160 <"/\\"> Expression_x160
+Expression_p160-restrict_front		= Expression_p160 <"/|\\"> Expression_x160
+Expression_p160-restrict_tail		= Expression_p160 <"\\|/"> Expression_x160
+Expression_p160-couple			= Expression_p160 <"|->"> Expression_x160
+<Expression_x160>			= Expression_p170
+
+<Expression_p170>			= Expression_p170-interval | Expression_x170
+Expression_p170-interval		= Expression_p170 <".."> Expression_x170
+<Expression_x170>			= Expression_p180
+
+<Expression_p180>			= Expression_p180-add | Expression_p180-set_subtraction | Expression_p180-minus_or_set_subtract | Expression_x180
+Expression_p180-add			= Expression_p180 <"+"> Expression_x180
+Expression_p180-set_subtraction		= Expression_p180 <"\\"> Expression_x180
+Expression_p180-minus_or_set_subtract	= Expression_p180 <"-"> Expression_x180
+<Expression_x180>			= Expression_p190
+
+<Expression_p190>			= Expression_p190-mult_or_cart | Expression_p190-div | Expression_p190-modulo | Expression_x190
+Expression_p190-mult_or_cart		= Expression_p190 <"*"> Expression_x190
+Expression_p190-div			= Expression_p190 <"/"> Expression_x190
+Expression_p190-modulo			= Expression_p190 <"mod"> Expression_x190
+<Expression_x190>			= Expression_p200
+
+<Expression_p200>			= Expression_p200-power_of | Expression_x200
+Expression_p200-power_of		= Expression_x200 <"**"> Expression_p200
+<Expression_x200>			= Expression_p210
+
+<Expression_p210>			= Expression_p210-unary_minus | Expression_x210
+Expression_p210-unary_minus		= <"-"> Expression_x210
+<Expression_x210>			= Expression_p230
+
+<Expression_p230>			= Expression_p230-reverse | Expression_x230
+Expression_p230-reverse			= Expression_x230 <"~">
+<Expression_x230>			= Expression_p231
+
+<Expression_p231>			= Expression_p231-image | Expression_x231
+Expression_p231-image			= Expression_p230 <"["> Expression_in_par <"]">
+<Expression_x231>			= Expression_keyword
+
+<Expression_keyword>			= Expression_k-convert_bool | Expression_k-max | Expression_k-min | Expression_k-card | Expression_k-general_sum | Expression_k-general_product | Expression_k-pow_subset | Expression_k-pow1_subset | Expression_k-fin_subset | Expression_k-fin1_subset | Expression_k-general_union | Expression_k-general_intersection | Expression_k-identity | Expression_k-reflexive_closure | Expression_k-closure | Expression_k-domain | Expression_k-range | Expression_k-lambda | Expression_k-trans_function | Expression_k-trans_relation | Expression_k-seq | Expression_k-seq1 | Expression_k-iseq | Expression_k-iseq1 | Expression_k-perm | Expression_k-empty_sequence | Expression_k-size | Expression_k-first | Expression_k-last | Expression_k-front | Expression_k-tail | Expression_k-rev | Expression_k-first_projection | Expression_k-second_projection | Expression_k-iteration | Expression_k-comprehension_set | Expression_k-quantified_union | Expression_k-quantified_intersection | Expression_k-quantified_set | Expression_k-set_extension | Expression_k-sequence_extension | Expression_k-couple2 | Expression_k-general_concat | Expression_k-tree | Expression_k-btree | Expression_k-const | Expression_k-top | Expression_k-sons | Expression_k-prefix | Expression_k-postfix | Expression_k-sizet | Expression_k-mirror | Expression_k-rank | Expression_k-father | Expression_k-son | Expression_k-subtree | Expression_k-arity | Expression_k-bin1 | Expression_k-bin2 | Expression_k-left | Expression_k-right | Expression_k-infix | Expression_k-struct | Expression_k-rec | Expression_k-record_field | Expression_func
+
+Expression_k-convert_bool		= <"bool"> <"("> Predicate_top <")">
+Expression_k-max			= <"max"> <"("> Expression_in_par <")">
+Expression_k-min			= <"min"> <"("> Expression_in_par <")">
+Expression_k-card			= <"card"> <"("> Expression_in_par <")">
+Expression_k-general_sum		= <"SIGMA"> Expsc <"."> <"("> Predicate_top <"|"> Expression_in_par <")">
+Expression_k-general_product		= <"PI"> Expsc <"."> <"("> Predicate_top <"|"> Expression_in_par <")">
+Expression_k-pow_subset			= <"POW"> <"("> Expression_in_par <")">
+Expression_k-pow1_subset		= <"POW1"> <"("> Expression_in_par <")">
+Expression_k-fin_subset			= <"FIN"> <"("> Expression_in_par <")">
+Expression_k-fin1_subset		= <"FIN1"> <"("> Expression_in_par <")">
+Expression_k-general_union		= <"union"> <"("> Expression_in_par <")">
+Expression_k-general_intersection	= <"inter"> <"("> Expression_in_par <")">
+Expression_k-identity			= <"id"> <"("> Expression_in_par <")">
+Expression_k-reflexive_closure		= <"closure"> <"("> Expression_in_par <")">
+Expression_k-closure			= <"closure1"> <"("> Expression_in_par <")">
+Expression_k-domain			= <"dom"> <"("> Expression_in_par <")">
+Expression_k-range			= <"ran"> <"("> Expression_in_par <")">
+Expression_k-lambda			= <"%"> Expsc <"."> <"("> Predicate_top <"|"> Expression_in_par <")">
+Expression_k-trans_function		= <"fnc"> <"("> Expression_in_par <")">
+Expression_k-trans_relation		= <"rel"> <"("> Expression_in_par <")">
+Expression_k-seq			= <"seq"> <"("> Expression_in_par <")">
+Expression_k-seq1			= <"seq1"> <"("> Expression_in_par <")">
+Expression_k-iseq			= <"iseq"> <"("> Expression_in_par <")">
+Expression_k-iseq1			= <"iseq1"> <"("> Expression_in_par <")">
+Expression_k-perm			= <"perm"> <"("> Expression_in_par <")">
+Expression_k-empty_sequence		= <"["> <"]"> | <"<"> <">">
+Expression_k-size			= <"size"> <"("> Expression_in_par <")">
+Expression_k-first			= <"first"> <"("> Expression_in_par <")">
+Expression_k-last			= <"last"> <"("> Expression_in_par <")">
+Expression_k-front			= <"front"> <"("> Expression_in_par <")">
+Expression_k-tail			= <"tail"> <"("> Expression_in_par <")">
+Expression_k-rev			= <"rev"> <"("> Expression_in_par <")">
+Expression_k-first_projection		= <"prj1"> <"("> Expression_in_par <","> Expression_in_par <")">
+Expression_k-second_projection		= <"prj2"> <"("> Expression_in_par <","> Expression_in_par <")">
+Expression_k-iteration			= <"iterate"> <"("> Expression_in_par <","> Expression_in_par <")">
+Expression_k-comprehension_set		= <"{"> Expsc <"|"> Predicate_top <"}">
+Expression_k-quantified_union		= <"UNION"> Expsc <"."> <"("> Predicate_top <"|"> Expression_in_par <")">
+Expression_k-quantified_intersection	= <"INTER"> Expsc <"."> <"("> Predicate_top <"|"> Expression_in_par <")">
+Expression_k-quantified_set		= <"SET"> Expsc <"."> <"("> Predicate_top <")">
+Expression_k-set_extension		= <"{"> Expsc <"}">
+Expression_k-sequence_extension		= <"["> Expsc <"]">
+Expression_k-couple2			= <"("> Expression_in_par <","> Expsc <")">
+Expression_k-general_concat		= <"conc"> <"("> Expression_in_par <")">
+Expression_k-tree			= <"tree"> <"("> Expression_in_par <")">
+Expression_k-btree			= <"btree"> <"("> Expression_in_par <")">
+Expression_k-const			= <"const"> <"("> Expression_in_par <","> Expression_in_par <")">
+Expression_k-top			= <"top"> <"("> Expression_in_par <")">
+Expression_k-sons			= <"sons"> <"("> Expression_in_par <")">
+Expression_k-prefix			= <"prefix"> <"("> Expression_in_par <")">
+Expression_k-postfix			= <"postfix"> <"("> Expression_in_par <")">
+Expression_k-sizet			= <"sizet"> <"("> Expression_in_par <")">
+Expression_k-mirror			= <"mirror"> <"("> Expression_in_par <")">
+Expression_k-rank			= <"rank"> <"("> Expression_in_par <")">
+Expression_k-father			= <"father"> <"("> Expression_in_par <","> Expression_in_par <")">
+Expression_k-son			= <"son"> <"("> Expression_in_par <","> Expression_in_par <","> Expression_in_par <")">
+Expression_k-subtree			= <"subtree"> <"("> Expression_in_par <","> Expression_in_par <")">
+Expression_k-arity			= <"arity"> <"("> Expression_in_par <","> Expression_in_par <")">
+Expression_k-bin1			= <"bin"> <"("> Expression_in_par <")">
+Expression_k-bin2			= <"bin"> <"("> Expression_in_par <","> Expression_in_par <","> Expression_in_par <")">
+Expression_k-left			= <"left"> <"("> Expression_in_par <")">
+Expression_k-right			= <"right"> <"("> Expression_in_par <")">
+Expression_k-infix			= <"infix"> <"("> Expression_in_par <")">
+Expression_k-struct			= <"struct"> <"("> Rec_entry_list <")">
+Expression_k-rec			= <"rec"> <"("> Rec_entry_list <")">
+Expression_k-record_field		= Expression_p231 <"'"> Expression_atomic
+<Expression_func>			= Expression_func-function | Expression_atomic
+
+Rec_entry_list				= Rec_entry-rec_entry (<","> Rec_entry-rec_entry)*
+Rec_entry-rec_entry			= <"("> Expression_top <":"> Expression_in_par <")"> | Expression_top <":"> Expression_in_par
+
+Expression_func-function		= Expression_p230 <"("> Expsc <")">
+
+<Expression_atomic>			= Expression_atomic-paren | Expression_atomic-identifier | Expression_atomic-primed_identifier | Expression_atomic-string | Expression_atomic-boolean_true | Expression_atomic-boolean_false | Expression_atomic-successor | Expression_atomic-predecessor | Expression_atomic-integer | Expression_atomic-max_int | Expression_atomic-min_int | Expression_atomic-empty_set | Expression_atomic-integer_set | Expression_atomic-natural_set | Expression_atomic-natural1_set | Expression_atomic-nat_set | Expression_atomic-nat1_set | Expression_atomic-int_set | Expression_atomic-bool_set | Expression_atomic-string_set
+
+<Expression_atomic-paren>		= <"("> Expression_in_par <")">
+<Expression_atomic-identifier>		= Composed_identifier
+Expression_atomic-primed_identifier	= Composed_identifier <"$"> Integer_literal
+<Expression_atomic-string>		= String_literal
+Expression_atomic-boolean_true		= <"TRUE">
+Expression_atomic-boolean_false		= <"FALSE">
+Expression_atomic-successor		= <"succ">
+Expression_atomic-predecessor		= <"pred">
+<Expression_atomic-integer>		= Integer_literal
+Expression_atomic-max_int		= <"MAXINT">
+Expression_atomic-min_int		= <"MININT">
+Expression_atomic-empty_set		= <"{"> <"}">
+Expression_atomic-integer_set		= <"INTEGER">
+Expression_atomic-natural_set		= <"NATURAL">
+Expression_atomic-natural1_set		= <"NATURAL1">
+Expression_atomic-nat_set		= <"NAT">
+Expression_atomic-nat1_set		= <"NAT1">
+Expression_atomic-int_set		= <"INT">
+Expression_atomic-bool_set		= <"BOOL">
+Expression_atomic-string_set		= <"STRING">
+
+
+<Substitution_l1>			= Substitution_l1-sequence | Substitution_l2
+Substitution_l1-sequence		= Substitution_l2 <";"> Substitution_l2 Sequence_subst_tail?
+<Substitution_l2>			= Substitution_l2-parallel | Substitution_l3
+Substitution_l2-parallel		= Substitution_l3 <"||"> Substitution_l3 Parallel_subst_tail?
+<Substitution_l3>			= Substitution_l3-block | Substitution_l3-skip | Substitution_l3-assign | Substitution_l3-precondition | Substitution_l3-assertion | Substitution_l3-choice | Substitution_l3-if | Substitution_l3-select | Substitution_l3-case | Substitution_l3-any | Substitution_l3-becomes_element_of | Substitution_l3-becomes_such | Substitution_l3-var | Substitution_l3-func_op | Substitution_l3-operation_call | Substitution_l3-while | Substitution_l3-let | Substitution_l3-definition
+
+Substitution_l3-block			= <"BEGIN"> Substitution_l1 <"END">
+Substitution_l3-skip			= T_skip
+Substitution_l3-assign			= Expsc <":="> Expsc
+Substitution_l3-precondition		= <"PRE"> Predicate_top <"THEN"> Substitution_l1 <"END">
+Substitution_l3-assertion		= T_assert Predicate_top <"THEN"> Substitution_l1 <"END">
+Substitution_l3-choice			= <"CHOICE"> Substitution_l1 Sub-choice_or* <"END">
+Substitution_l3-if			= <"IF"> Predicate_top <"THEN"> Substitution_l1 If_elsif_list Else_check <"END">
+Substitution_l3-select			= <"SELECT"> Predicate_top <"THEN"> Substitution_l1 Select_when_list Else_check <"END">
+Substitution_l3-case			= <"CASE"> Expression_in_par <"OF"> <"EITHER"> Expsc <"THEN"> Substitution_l1 Case_or_list Else_check <"END"> <"END">
+Substitution_l3-any			= T_any Expsc <"WHERE"> Predicate_top <"THEN"> Substitution_l1 <"END">
+Substitution_l3-becomes_element_of	= Expsc <"::"> Expression_top
+Substitution_l3-becomes_such		= Expsc <":"> <"("> Predicate_top <")">
+Substitution_l3-var			= <"VAR"> Expsc <"IN"> Substitution_l1 <"END">
+Substitution_l3-func_op			= Expression_func
+Substitution_l3-operation_call		= Expsc <"<--"> Composed_identifier Op_params_check
+Substitution_l3-while			= <"WHILE"> Predicate_top <"DO"> Substitution_l1 T_invariant Predicate_top <"VARIANT"> Expression_in_par <"END">
+Substitution_l3-let			= <"LET"> Expsc <"BE"> Predicate_top <"IN"> Substitution_l1 <"END">
+Substitution_l3-definition		= <"#literal_substitution"> idletter Def_call_params?
+
+<Parallel_subst_tail>			= <"||"> Substitution_l3 (<"||"> Substitution_l3)*
+<Sequence_subst_tail>			= <";"> Substitution_l2 (<";"> Substitution_l2)*
+Sub-choice_or				= <"OR"> Substitution_l1
+
+If_elsif_list				= If_elsif-if_elsif*
+If_elsif-if_elsif			= <"ELSIF"> Predicate_top <"THEN"> Substitution_l1
+
+Select_when_list			= Select_when-select_when*
+Select_when-select_when			= <"WHEN"> Predicate_top <"THEN"> Substitution_l1
+
+Case_or_list				= Case_or-case_or*
+Case_or-case_or				= <"OR"> Expsc <"THEN"> Substitution_l1
+
+Empty					= <"">
+<Else_check>				= Empty_else | Else
+Empty_else				= <"">
+<Else>					= <"ELSE"> Substitution_l1
+
+
+<Op_params_check>			= Empty | <"("> Expsc <")">
+
+Def_call_params				= <"("> Expsc <")">
+
+
+
+
+
+<id>					= !(Token)identifier	(* negative lookahead *)
+identifier				= #'[a-zA-z][a-zA-Z0-9_]*'
+<id__>					= !(Token)identifier__	(* negative lookahead *)
+identifier__				= #'[a-zA-z][a-zA-Z0-9_]*'
+<idload>				= !(Token)identifierload
+identifierload				= #'[a-zA-z][a-zA-Z0-9_]*([.][a-zA-z][a-zA-Z0-9_]*)*'
+identifierload_clause			= #'[a-zA-z][a-zA-Z0-9_]*([.][a-zA-z][a-zA-Z0-9_]*)*'
+<Composed_identifier_>			= !(Token)identifier_
+identifier_				= #'[a-zA-z][a-zA-Z0-9_]*([.][a-zA-z][a-zA-Z0-9_]*)*'
+<idletter>				= !(Token)identifierletter
+identifierletter			= #'[a-zA-z]*'
+<id_header>				= !(Token)identifier_header
+identifier_header			= #'[a-zA-z][a-zA-Z0-9_]*([.][a-zA-z][a-zA-Z0-9_]*)*'
+
+
+Expsc					= Expression_top (<","> Expression_top)*
+
+Integer_literal				= #'[0-9]+'
+String_literal				= #'[\"][^\"]*[\"]'
+
+<Composed_identifier>			= id (<"."> id)*
+Identifier_list				= Composed_identifier (<","> Composed_identifier)*
+Identifierload_clause_list		= identifierload_clause (<","> identifierload)*
+
+
+
+Token 					= T_abstract_constants | T_abstract_variables | T_any | T_assert | T_constraints | T_assertions | T_be | T_begin | T_bool | T_bfalse | T_case | T_choice | T_concrete_constants | T_concrete_variables | T_constants | T_definitions | T_do | T_either | T_else | T_elsif | T_end | T_extends | T_false | T_fin | T_fin1 | T_if | T_implementation | T_imports | T_in | T_includes | T_initialisation | T_int | T_integer | T_quantified_inter | T_invariant | T_let | T_local_operations | T_machine | T_model | T_system | T_max_int | T_min_int | T_nat | T_nat1 | T_natural | T_natural1 | T_of | T_operations | T_or | T_pi | T_pow | T_pow1 | T_pre | T_promotes | T_properties | T_refines | T_refinement | T_sees | T_select | T_sets | T_quantified_set | T_sigma | T_string | T_then | T_true | T_quantified_union | T_uses | T_value | T_var | T_variant | T_variables | T_when | T_where | T_while | T_arity | T_bin | T_bool_cast | T_btree | T_card | T_closure | T_closure1 | T_conc | T_const | T_dom | T_father | T_first | T_fnc | T_front | T_id | T_infix | T_generalized_inter | T_iseq | T_iseq1 | T_iterate | T_last | T_left | T_max | T_min | T_mirror | T_mod | T_not | T_logical_or | T_perm | T_postfix | T_pred | T_prefix | T_prj1 | T_prj2 | T_rank | T_ran | T_rec | T_rel | T_rev | T_right | T_seq | T_seq1 | T_sizet | T_size | T_skip | T_sons | T_son | T_struct | T_subtree | T_succ | T_tail | T_top | T_tree | T_generalized_union | T_kw_freetypes | T_kw_expression | T_kw_predicate | T_kw_formula | T_kw_substitution | T_kw_abstract_constants | T_kw_abstract_variables | T_kw_assertions | T_kw_concrete_constants | T_kw_concrete_variables | T_kw_constants | T_kw_constraints | T_kw_definitions | T_kw_definition | T_kw_extends | T_kw_imports | T_kw_includes | T_kw_initialisation | T_kw_invariant | T_kw_local_operations | T_kw_operations | T_kw_promotes | T_kw_properties | T_kw_sees | T_kw_sets | T_kw_uses | T_kw_variables | T_kw_values | T_kw_oppattern | T_def_literal_substitution | T_def_literal_predicate | T_predicate_identifier | T_truth_predicate | T_pragma
+
+<T_abstract_constants>			= <"ABSTRACT_CONSTANTS">
+<T_abstract_variables>			= <"ABSTRACT_VARIABLES">
+<T_any>					= <"ANY">
+<T_assert>				= <"ASSERT">
+<T_assertions>				= <"ASSERTIONS">
+<T_be>					= <"BE">
+<T_begin>				= <"BEGIN">
+<T_bool>				= <"BOOL">
+<T_bfalse>				= <"bfalse">
+<T_case>				= <"CASE">
+<T_choice>				= <"CHOICE">
+<T_concrete_constants>			= <"CONCRETE_CONSTANTS">
+<T_concrete_variables>			= <"CONCRETE_VARIABLES">
+<T_constants>				= <"CONSTANTS">
+<T_constraints>				= <"CONSTRAINTS">
+<T_definitions>				= <"DEFINITIONS">
+<T_do>					= <"DO">
+<T_either>				= <"EITHER">
+<T_else>				= <"ELSE">
+<T_elsif>				= <"ELSIF">
+<T_end>					= <"END">
+<T_extends>				= <"EXTENDS">
+<T_false>				= <"FALSE">
+<T_fin>					= <"FIN">
+<T_fin1>				= <"FIN1">
+<T_if>					= <"IF">
+<T_implementation>			= <"IMPLEMENTATION">
+<T_imports>				= <"IMPORTS">
+<T_in>					= <"IN">
+<T_includes>				= <"INCLUDES">
+<T_initialisation>			= <"INITIALISATION"> | <"INITIALIZATION">
+<T_int>					= <"INT">
+<T_integer>				= <"INTEGER">
+<T_quantified_inter>			= <"INTER">
+<T_invariant>				= <"INVARIANT">
+<T_let>					= <"LET">
+<T_local_operations>			= <"LOCAL_OPERATIONS">
+<T_machine>				= <"MACHINE">
+<T_model>				= <"MODEL">
+<T_system>				= <"SYSTEM">
+<T_max_int>				= <"MAXINT">
+<T_min_int>				= <"MININT">
+<T_nat>					= <"NAT">
+<T_nat1>				= <"NAT1">
+<T_natural>				= <"NATURAL">
+<T_natural1>				= <"NATURAL1">
+<T_of>					= <"OF">
+<T_operations>				= <"OPERATIONS"> | <"EVENTS">
+<T_or>					= <"OR">
+<T_pi>					= <"PI">
+<T_pow>					= <"POW">
+<T_pow1>				= <"POW1">
+<T_pre>					= <"PRE">
+<T_promotes>				= <"PROMOTES">
+<T_properties>				= <"PROPERTIES">
+<T_refines>				= <"REFINES">
+<T_refinement>				= <"REFINEMENT">
+<T_sees>				= <"SEES">
+<T_select>				= <"SELECT">
+<T_sets>				= <"SETS">
+<T_quantified_set>			= <"SET">
+<T_sigma>				= <"SIGMA">
+<T_string>				= <"STRING">
+<T_then>				= <"THEN">
+<T_true>				= <"TRUE">
+<T_quantified_union>			= <"UNION">
+<T_uses>				= <"USES">
+<T_value>				= <"VALUES">
+<T_var>					= <"VAR">
+<T_variant>				= <"VARIANT">
+<T_variables>				= <"VARIABLES">
+<T_when>				= <"WHEN">
+<T_where>				= <"WHERE">
+<T_while>				= <"WHILE">
+<T_arity>				= <"arity">
+<T_bin>					= <"bin">
+<T_bool_cast>				= <"bool">
+<T_btree>				= <"btree">
+<T_card>				= <"card">
+<T_closure>				= <"closure">
+<T_closure1>				= <"closure1">
+<T_conc>				= <"conc">
+<T_const>				= <"const">
+<T_dom>					= <"dom">
+<T_father>				= <"father">
+<T_first>				= <"first">
+<T_fnc>					= <"fnc">
+<T_front>				= <"front">
+<T_id>					= <"id">
+<T_infix>				= <"infix">
+<T_generalized_inter>			= <"inter">
+<T_iseq>				= <"iseq">
+<T_iseq1>				= <"iseq1">
+<T_iterate>				= <"iterate">
+<T_last>				= <"last">
+<T_left>				= <"left">
+<T_max>					= <"max">
+<T_min>					= <"min">
+<T_mirror>				= <"mirror">
+<T_mod>					= <"mod">
+<T_not>					= <"not">
+<T_logical_or>				= <"or">
+<T_perm>				= <"perm">
+<T_postfix>				= <"postfix">
+<T_pred>				= <"pred">
+<T_prefix>				= <"prefix">
+<T_prj1>				= <"prj1">
+<T_prj2>				= <"prj2">
+<T_rank>				= <"rank">
+<T_ran>					= <"ran">
+<T_rec>					= <"rec">
+<T_rel>					= <"rel">
+<T_rev>					= <"rev">
+<T_right>				= <"right">
+<T_seq>					= <"seq">
+<T_seq1>				= <"seq1">
+<T_sizet>				= <"sizet">
+<T_size>				= <"size">
+<T_skip>				= <"skip">
+<T_sons>				= <"sons">
+<T_son>					= <"son">
+<T_struct>				= <"struct">
+<T_subtree>				= <"subtree">
+<T_succ>				= <"succ">
+<T_tail>				= <"tail">
+<T_top>					= <"top">
+<T_tree>				= <"tree">
+<T_generalized_union>			= <"union">
+
+<T_kw_freetypes>			= <"FREETYPES">
+<T_kw_expression>			= <"#EXPRESSION">
+<T_kw_predicate>			= <"#PREDICATE">
+<T_kw_formula>				= <"#FORMULA">
+<T_kw_substitution>			= <"#SUBSTITUTION">
+<T_kw_abstract_constants>		= <"#ABSTRACT_CONSTANTS">
+<T_kw_abstract_variables>		= <"#ABSTRACT_VARIABLES">
+<T_kw_assertions>			= <"#ASSERTIONS">
+<T_kw_concrete_constants>		= <"#CONCRETE_CONSTANTS">
+<T_kw_concrete_variables>		= <"#CONCRETE_VARIABLES">
+<T_kw_constants>			= <"#CONSTANTS">
+<T_kw_constraints>			= <"#CONSTRAINTS">
+<T_kw_definitions>			= <"#DEFINITIONS">
+<T_kw_definition>			= <"#DEFINITION">
+<T_kw_extends>				= <"#EXTENDS">
+<T_kw_imports>				= <"#IMPORTS">
+<T_kw_includes>				= <"#INCLUDES">
+<T_kw_initialisation>			= <"#INITIALISATION">
+<T_kw_invariant>			= <"#INVARIANT">
+<T_kw_local_operations>			= <"#LOCAL_OPERATIONS">
+<T_kw_operations>			= <"#OPERATIONS">
+<T_kw_promotes>				= <"#PROMOTES">
+<T_kw_properties>			= <"#PROPERTIES">
+<T_kw_sees>				= <"#SEES">
+<T_kw_sets>				= <"#SETS">
+<T_kw_uses>				= <"#USES">
+<T_kw_variables>			= <"#VARIABLES">
+<T_kw_values>				= <"#VALUES">
+<T_kw_oppattern>			= <"#OPPATTERN">
+
+<T_def_literal_substitution>		= <"#literal_substitution">
+<T_def_literal_predicate>		= <"#literal_predicate">
+<T_predicate_identifier>		= <"#predicate_identifier">
+<T_truth_predicate>			= <"#truth_predicate">
+<T_pragma>				= "/*@"
+
+
